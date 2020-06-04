@@ -1,51 +1,68 @@
 ## The following describes both the functions makeCacheMatrix and CacheSolve
 ## makeCacheMatrix - This function creates a matrix based on the function argument. 
-## It has 4 functions inside it's body - set, get, settranspose, gettranspose
+## It has 4 functions inside it's body - set, get, setinverse, getinverse
 ## set - setting a new values to an existing matrix
 ## get - getting value of an existing matrix
-## settranspose - setting a transpose for the matrix
-## gettranspose - getting a transpose of the matrix
+## setinverse - setting a inverse for the matrix
+## getinverse - getting a inverse of the matrix
 
-makeCacheMatrix <- function(x = matrix()) {
-        transpose<-NULL
+makeCacheMatrix <- function(x = matrix( )) {
+        inverse<-NULL
         set <- function(y) {
-                x <<- y
-                transpose <<- NULL
+                x<<-y
+                inverse <<- NULL
         }
-        get <- function() as.matrix(x)
-        settranspose <- function(t) transpose <<- t
-        gettranspose <- function() transpose
+        get <- function() x
+        setinverse <- function(i) inverse <<- i
+        getinverse <- function() inverse
         list(set = set, get = get,
-             settranspose = settranspose,
-             gettranspose = gettranspose)
+             setinverse = setinverse,
+             getinverse = getinverse)
         
         
 }
 
 
-## cacheSolve - checking if the transpose if already in the cache or not. IF yes, then getting transpose from cache else calculating it
+## cacheSolve - checking if the inverse if already in the cache or not. IF yes, then getting inverse from cache else calculating it
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
-        transpose <- x$gettranspose()
-        if(!is.null(transpose)) {
+        inverse <- x$getinverse()
+        if(!is.null(inverse)) {
                 message("getting cached data")
-                return(transpose)
+                return(inverse)
         }
         data <- x$get()
-        transpose <- t(data, ...)
-        x$settranspose(transpose)
-        transpose
+        inverse <- solve(data, ...)
+        ?solve
+        x$setinverse(inverse)
+        inverse
         
 }
-
-m<-makeCacheMatrix(1:8)
+?as.matrix
+##---------Example 1
+mat<-matrix(c(-1,1,1.5,-1),2,2)
+m<-makeCacheMatrix(mat)
 m$get()
-m$gettranspose() 
-m$settranspose(as.matrix(10:19))
-m$set(10:40)
+m$getinverse() 
+cacheSolve(m)
+m$getinverse()
+
+##---------Example 2
+m$get()
+mat2<-matrix(c(1,-5,0,0,1,0,0,0,1),3,3)
+m$set(mat2)
 m$get()
 cacheSolve(m)
-m$gettranspose()
+m$getinverse()
+
+
+##---------Example 3
+mat3<-matrix(c(1,0,0,0,1,4,0,0,1),3,3)
+m$setinverse(mat3)
+m$getinverse()
+m$get()
+cacheSolve(m)
+
 
 
